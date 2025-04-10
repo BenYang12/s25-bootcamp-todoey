@@ -7,41 +7,52 @@ struct Todo: Identifiable {
 }
 
 struct ContentView: View {
-    @State private var todos: [Todo] = [
-        Todo(item: "Finish Project 3", isDone: false),
-        Todo(item: "Watch UNC beat Duke", isDone: false)
-    ]
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("4:58")
-                Spacer()
-                Image("topright")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 80, height: 80)//code copied from previous project
-            }
+    @State private var todos: [Todo] = [Todo(item: "Finish Project 4", isDone: false), Todo(item: "Watch UNC beat Duke", isDone: false)]
 
+    @State private var title: String = "Todo"
+    @State private var color: Color = .black
+    @State private var showInfo: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack{
+                HStack {
+                    Text("4:58")
+                    Spacer()
+                    Image("topright")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 75, height: 75)//code copied from previous project
+                }
+            }
+            HStack {
+                TextField("Title", text: $title)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(color)
+                Spacer()
+                Button {
+                    showInfo = true
+                } label: {
+                    Image(systemName: "info.square")
+                        .foregroundColor(color)
+                        .font(.largeTitle)
+                }
+            }
+            .sheet(isPresented: $showInfo) {
+                InfoView(title: $title, color: $color)
+            }
             List {
                 ForEach($todos) { $todo in
-                    HStack {
-                        Button {
-                            todo.isDone.toggle()//actionthen label
-                        } label: {
-                            Image(systemName: todo.isDone ? "checkmark.square.fill" : "square")
-                                .foregroundColor(todo.isDone ? .green : .gray)
-                        }
-
-                        TextField("New Todo", text: $todo.item)
-                            .strikethrough(todo.isDone)
-                    }
+                    TodoRowView(todo: $todo, color: color)
                 }
+                
 
-                Button {
-                    todos.append(Todo(item: "", isDone: false))//add a empty task to the list
+                Button{
+                    todos.append(Todo(item: "", isDone: false))
                 } label: {
-                    Text("New Reminder")
+                    Text("Add Reminder")
+                        .foregroundColor(color)
                 }
             }
         }
